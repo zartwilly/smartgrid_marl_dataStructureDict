@@ -59,6 +59,103 @@ def fct_positive(sum_list1, sum_list2):
     return diff
 
 # _____________________________________________________________________________
+#           compute q_minus, q_plus, pi_EPO_minus, pi_EPO_plus : debut
+# _____________________________________________________________________________
+def compute_phi_minus(q_minus=0, beta=1, prix_achat=30):
+    return prix_achat * pow(q_minus, beta)
+
+def compute_phi_plus(q_plus=0, alpha=1, prix_vente=10):
+    return prix_vente * pow(q_plus, alpha)
+
+def compute_q_pi_EPO_4_all_t(dico_T_players, 
+                             prix_achat=30, prix_vente=10, beta=1, alpha=1):
+    """
+    compute the variables q_minus_t, q_plus_t, pi_EPO_minus_t, pi_EPO_plus_t.
+    each variable is a list of T items. 
+    example q_minus = [q_minus_t]_{0<t<T-1}, q_plus = [q_plus_t]_{0<t<T-1}
+            pi_EPO_minus = [pi_EPO_minus_t]_{0<t<T-1},
+            pi_EPO_plus = [pi_EPO_plus_t]_{0<t<T-1}
+
+    Parameters
+    ----------
+    dico_T_players : dict
+        {"t0":dico_players_t0, "t1":dico_players_t1, "t2":dico_players_t2, ...}  
+            with dico_players_t0 = {"pl_0":dico_pl0, pl_1":dico_pl1, ... }
+                dico_pl0 = {"Pi":[], "Ci":[], "Si":[], "Si_max":[], ....}
+                
+    prix_achat: prix d'achat de l électricité de SG a EPO
+    prix_vente: prix de vente de l électricité de SG a EPO
+                
+    Returns
+    -------
+    dico_q_pi_EPO_T : dict
+        {"q_minus": [q_minus_t]_{0<t<T-1}, 
+         "q_plus" : [q_plus_t]_{0<t<T-1}
+         "pi_EPO_minus": [pi_EPO_minus_t]_{0<t<T-1},
+         "pi_EPO_plus": [pi_EPO_plus_t]_{0<t<T-1}}
+        }
+
+    """
+    q_minus, q_plus = list(), list()
+    pi_EPO_minus, pi_EPO_plus = list(), list()
+    
+    for t, dico_players_t in dico_T_players.items():
+        q_minus_t, q_plus_t = 0, 0
+        for player_name, dico_plX in dico_players_t.items():
+            diffpos_Ci_Pi = fct_aux.fct_positive(sum_list1=dico_plX["Ci"], 
+                                                 sum_list2=dico_plX["Pi"])
+            diffpos_Pi_Ci = fct_aux.fct_positive(sum_list1=dico_plX["Pi"], 
+                                                 sum_list2=dico_plX["Ci"])
+            diffpos_Pi_Ci_Simax_Si = fct_aux.fct_positive(
+                                        sum_list1=dico_plX["Pi"], 
+                                        sum_list2=dico_plX["Ci"] \
+                                                    + dico_plX["Si_max"] \
+                                                    - dico_plX["Si_init"])
+            diffpos_Ci_Pi_Si = fct_aux.fct_positive(
+                                        sum_list1=dico_plX["Ci"], 
+                                        sum_list2=dico_plX["Pi"] \
+                                                    + dico_plX["Si_init"])
+            
+            diffpos_CiPi_PiCiSimaxSi = fct_aux.fct_positive(
+                                        sum_list1=diffpos_Ci_Pi, 
+                                        sum_list2=diffpos_Pi_Ci_Simax_Si)
+            diffpos_PiCi_CiPiSi = fct_aux.fct_positive(
+                                        sum_list1=diffpos_Pi_Ci, 
+                                        sum_list2=diffpos_Ci_Pi_Si)
+            
+            q_minus_plX, q_plus_plX = None, None
+            q_minus_plX = diffpos_CiPi_PiCiSimaxSi
+            q_plus_plX = diffpos_PiCi_CiPiSi
+            
+            q_minus_t += q_minus_plX
+            q_plus_t += q_plus_plX
+        
+        # compute pi_EPO_{minus,plus}_t
+        phi_EPO_minus_t =  compute_phi_minus(q_minus=q_minus_t, beta=beta, 
+                                           prix_achat=prix_achat)
+        phi_EPO_plus_t =  compute_phi_plus(q_plus=q_plus_t, alpha=alpha, 
+                                         prix_vente=prix_vente)
+        pi_EPO_minus_t = round(phi_EPO_minus_t/q_minus_t, fct_aux.NB_REPEAT_K_MAX) \
+                            if q_minus_t != 0 else 0
+        pi_EPO_plus_t = round(phi_EPO_plus_t/q_plus_t, fct_aux.NB_REPEAT_K_MAX) \
+                            if q_plus_t != 0 else 0
+        # save q_{plus,minus}_t, pi_EPO_{minus,plus}_t
+        q_minus.append(q_minus_t)
+        q_plus.append(q_plus_t)
+        pi_EPO_minus.append(pi_EPO_minus_t)
+        pi_EPO_plus.append(pi_EPO_plus_t)
+        
+    dico_q_pi_EPO_T = dict()
+    dico_q_pi_EPO_T = {"q_minus": q_minus, "q_plus" : q_plus,
+                       "pi_EPO_minus": pi_EPO_minus, "pi_EPO_plus": pi_EPO_plus}
+    
+    return dico_q_pi_EPO_T
+
+# _____________________________________________________________________________
+#           compute q_minus, q_plus, pi_EPO_minus, pi_EPO_plus : fin
+# _____________________________________________________________________________
+
+# _____________________________________________________________________________
 #           generate data for tests : debut
 # _____________________________________________________________________________
 def generate_dico_T_players_4_test_scenario1(setA_m_players=2000, setB1_m_players=3000, 
