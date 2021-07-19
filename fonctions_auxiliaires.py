@@ -31,3 +31,26 @@ INDEX_ATTRS = {"Ci":0, "Pi":1, "Si_init":2, "Si":3, "Si_max":4, "gamma_i":5,
 RACINE_PLAYER = "player"
 RACINE_TPERIOD = "t"
 
+###############################################################################
+#                       fonctions transverses: debut       
+###############################################################################
+def fct_positive(sum_list1, sum_list2):
+    """
+    sum_list1 : sum of items in the list1
+    sum_list2 : sum of items in the list2
+    
+    difference between sum of list1 et sum of list2 such as :
+         diff = 0 if sum_list1 - sum_list2 <= 0
+         diff = sum_list1 - sum_list2 if sum_list1 - sum_list2 > 0
+
+        diff = 0 if sum_list1 - sum_list2 <= 0 else sum_list1 - sum_list2
+    Returns
+    -------
+    return 0 or sum_list1 - sum_list2
+    
+    """
+    
+    # boolean = sum_list1 - sum_list2 > 0
+    # diff = boolean * (sum_list1 - sum_list2)
+    diff = 0 if sum_list1 - sum_list2 <= 0 else sum_list1 - sum_list2
+    return diff
