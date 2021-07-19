@@ -102,24 +102,24 @@ def compute_q_pi_EPO_4_all_t(dico_T_players,
     for t, dico_players_t in dico_T_players.items():
         q_minus_t, q_plus_t = 0, 0
         for player_name, dico_plX in dico_players_t.items():
-            diffpos_Ci_Pi = fct_aux.fct_positive(sum_list1=dico_plX["Ci"], 
+            diffpos_Ci_Pi = fct_positive(sum_list1=dico_plX["Ci"], 
                                                  sum_list2=dico_plX["Pi"])
-            diffpos_Pi_Ci = fct_aux.fct_positive(sum_list1=dico_plX["Pi"], 
+            diffpos_Pi_Ci = fct_positive(sum_list1=dico_plX["Pi"], 
                                                  sum_list2=dico_plX["Ci"])
-            diffpos_Pi_Ci_Simax_Si = fct_aux.fct_positive(
+            diffpos_Pi_Ci_Simax_Si = fct_positive(
                                         sum_list1=dico_plX["Pi"], 
                                         sum_list2=dico_plX["Ci"] \
                                                     + dico_plX["Si_max"] \
                                                     - dico_plX["Si_init"])
-            diffpos_Ci_Pi_Si = fct_aux.fct_positive(
+            diffpos_Ci_Pi_Si = fct_positive(
                                         sum_list1=dico_plX["Ci"], 
                                         sum_list2=dico_plX["Pi"] \
                                                     + dico_plX["Si_init"])
             
-            diffpos_CiPi_PiCiSimaxSi = fct_aux.fct_positive(
+            diffpos_CiPi_PiCiSimaxSi = fct_positive(
                                         sum_list1=diffpos_Ci_Pi, 
                                         sum_list2=diffpos_Pi_Ci_Simax_Si)
-            diffpos_PiCi_CiPiSi = fct_aux.fct_positive(
+            diffpos_PiCi_CiPiSi = fct_positive(
                                         sum_list1=diffpos_Pi_Ci, 
                                         sum_list2=diffpos_Ci_Pi_Si)
             
@@ -135,9 +135,9 @@ def compute_q_pi_EPO_4_all_t(dico_T_players,
                                            prix_achat=prix_achat)
         phi_EPO_plus_t =  compute_phi_plus(q_plus=q_plus_t, alpha=alpha, 
                                          prix_vente=prix_vente)
-        pi_EPO_minus_t = round(phi_EPO_minus_t/q_minus_t, fct_aux.NB_REPEAT_K_MAX) \
+        pi_EPO_minus_t = round(phi_EPO_minus_t/q_minus_t, NB_REPEAT_K_MAX) \
                             if q_minus_t != 0 else 0
-        pi_EPO_plus_t = round(phi_EPO_plus_t/q_plus_t, fct_aux.NB_REPEAT_K_MAX) \
+        pi_EPO_plus_t = round(phi_EPO_plus_t/q_plus_t, NB_REPEAT_K_MAX) \
                             if q_plus_t != 0 else 0
         # save q_{plus,minus}_t, pi_EPO_{minus,plus}_t
         q_minus.append(q_minus_t)
