@@ -206,7 +206,7 @@ def generate_PiCiSi_scenario50instances(setA_m_players, dico_setA,
                 
             dico_players_t[fct_aux.RACINE_PLAYER+str(id_pl_i)] = dico_player_i    
        
-        dico_T_players[fct_aux.ACINE_TPERIOD+str(t)] = dico_players_t
+        dico_T_players[fct_aux.RACINE_TPERIOD+str(t)] = dico_players_t
         
     return dico_T_players
         
